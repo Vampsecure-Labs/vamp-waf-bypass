@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+.rotated-secrets.txt
+.pytest_cache/
+.ruff_cache/

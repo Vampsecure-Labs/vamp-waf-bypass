@@ -1,0 +1,5 @@
+# vamp-waf-bypass — no runtime dependencies (uses only Python stdlib: urllib, re, json…)
+
+# Dev/test only
+pytest>=7.0
+ruff>=0.1.0
