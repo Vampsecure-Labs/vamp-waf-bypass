@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 # ─── Check catalog ────────────────────────────────────────────────────────────
 
@@ -754,6 +754,65 @@ def _h(s: object) -> str:
             .replace(">", "&gt;").replace('"', "&quot;"))
 
 
+# ─── Daemon mode ──────────────────────────────────────────────────────────────
+
+def _daemon_loop(args, interval: int) -> None:
+    """Re-scan every `interval` seconds; print only NEW / RESOLVED changes."""
+    import signal
+
+    prev_ids: set = set()
+    iteration = 0
+
+    def _stop(sig, frame):
+        print("\n[!] Daemon detenido.", file=sys.stderr)
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, _stop)
+    signal.signal(signal.SIGTERM, _stop)
+
+    print(
+        f"[*] Daemon mode — {args.target} — cada {interval}s — Ctrl+C para detener",
+        file=sys.stderr,
+    )
+
+    while True:
+        iteration += 1
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        print(f"\n── [{ts}] iter #{iteration} ──", file=sys.stderr)
+
+        findings = scan(args.target, param=args.param, rate_n=args.rate_n)
+        if args.severity:
+            findings = [f for f in findings if f.severity in args.severity]
+
+        current_ids = {f.check_id for f in findings}
+        new_ids = current_ids - prev_ids
+        resolved_ids = prev_ids - current_ids
+
+        if not new_ids and not resolved_ids:
+            print("[=] Sin cambios", file=sys.stderr)
+        else:
+            for f in sorted(findings, key=lambda x: x.check_id):
+                if f.check_id in new_ids:
+                    print(
+                        f"  [+NEW     ][{f.severity.upper():8s}] {f.check_id}: {f.title}",
+                        file=sys.stderr,
+                    )
+            for cid in sorted(resolved_ids):
+                print(f"  [-RESOLVED] {cid}", file=sys.stderr)
+
+        prev_ids = current_ids
+
+        if args.json:
+            report = build_report(args.target, findings, args.case, args.analyst)
+            out = json.dumps(report, indent=2, ensure_ascii=False)
+            if args.json == "-":
+                print(out)
+            else:
+                Path(args.json).write_text(out, encoding="utf-8")
+
+        time.sleep(interval)
+
+
 # ─── CLI ──────────────────────────────────────────────────────────────────────
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -779,8 +838,16 @@ def main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--case", default="", metavar="ID", help="Case reference ID")
     p.add_argument("--analyst", default="", help="Analyst name")
     p.add_argument("--quiet", action="store_true", help="Suppress stdout output")
+    p.add_argument(
+        "--watch", type=int, metavar="SECONDS",
+        help="Daemon mode: re-run every N seconds, show only NEW/RESOLVED changes",
+    )
     p.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     args = p.parse_args(argv)
+
+    if args.watch is not None:
+        _daemon_loop(args, args.watch)
+        return 0
 
     if not args.quiet:
         print(f"[*] vamp-waf-bypass {__version__} — target: {args.target}", file=sys.stderr)

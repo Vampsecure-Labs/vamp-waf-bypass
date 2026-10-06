@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vamp-waf-bypass"
-version = "1.0.0"
+version = "1.1.0"
 description = "WAF evasion tester — 15 bypass checks for authorized security testing"
 readme = "README.md"
 license = { text = "AGPL-3.0-only" }

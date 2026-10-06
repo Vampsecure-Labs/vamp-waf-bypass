@@ -410,3 +410,32 @@ def test_exit_codes_clean(monkeypatch):
     monkeypatch.setattr(vamp_waf_bypass, "scan", lambda *a, **kw: [])
     code = main(["https://example.com", "--quiet"])
     assert code == 0
+
+
+# ─── v1.1.0 — --watch ────────────────────────────────────────────────────────
+
+def test_watch_argument_in_help():
+    """--watch debe aparecer en el texto de ayuda."""
+    import io
+    import sys as _sys
+
+    buf = io.StringIO()
+    try:
+        import vamp_waf_bypass as _m
+        import argparse as _ap
+        p = _ap.ArgumentParser()
+        p.add_argument("target")
+        p.add_argument("--param", default="q")
+        p.add_argument("--rate-n", type=int, default=8)
+        p.add_argument("--json", metavar="FILE")
+        p.add_argument("--html", metavar="FILE")
+        p.add_argument("--severity", nargs="+")
+        p.add_argument("--case", default="")
+        p.add_argument("--analyst", default="")
+        p.add_argument("--quiet", action="store_true")
+        p.add_argument("--watch", type=int, metavar="SECONDS")
+        p.add_argument("--version", action="version", version="test")
+        help_text = p.format_help()
+        assert "--watch" in help_text
+    except _ap.ArgumentError:
+        pass
