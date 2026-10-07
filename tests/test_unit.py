@@ -416,12 +416,7 @@ def test_exit_codes_clean(monkeypatch):
 
 def test_watch_argument_in_help():
     """--watch debe aparecer en el texto de ayuda."""
-    import io
-    import sys as _sys
-
-    buf = io.StringIO()
     try:
-        import vamp_waf_bypass as _m
         import argparse as _ap
         p = _ap.ArgumentParser()
         p.add_argument("target")
