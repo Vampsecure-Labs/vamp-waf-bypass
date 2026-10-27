@@ -189,6 +189,7 @@ Exit code: 2 (CRITICAL bypass confirmed)
 
 | Version | Main changes |
 |---------|-------------|
+| v1.2.0 | Per-check standards now emit the documented OWASP WSTG / MITRE ATT&CK / NIST references (e.g. WAF-002 → WSTG-INPV-05 · MITRE T1036); previously the output carried generic OWASP Top 10 tags that did not match the README coverage table. |
 | v1.1.1 | Bilingual README (EN/ES) |
 | v1.1.0 | Daemon mode (`--watch N`) |
 | v1.0.0 | Initial release — 15 checks, WAF fingerprinting, JSON + HTML reports |
@@ -384,6 +385,7 @@ Exit code: 2 (CRITICAL bypass confirmed)
 
 | Versión | Cambios principales |
 |---------|---------------------|
+| v1.2.0 | Cada check emite ahora los estándares documentados OWASP WSTG / MITRE ATT&CK / NIST (p. ej. WAF-002 → WSTG-INPV-05 · MITRE T1036); antes la salida llevaba tags genéricos de OWASP Top 10 que no cuadraban con la tabla del README. |
 | v1.1.1 | README bilingüe (EN/ES) |
 | v1.1.0 | Modo daemon (`--watch N`) |
 | v1.0.0 | Versión inicial — 15 checks, fingerprinting WAF, informes JSON + HTML |

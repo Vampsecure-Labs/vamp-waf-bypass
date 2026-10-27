@@ -434,3 +434,17 @@ def test_watch_argument_in_help():
         assert "--watch" in help_text
     except _ap.ArgumentError:
         pass
+
+
+class TestStandardMapping:
+    """v1.2.0: cada check emite el estándar documentado (OWASP WSTG / MITRE / NIST)."""
+    def test_wstg_y_mitre_en_checks(self):
+        from vamp_waf_bypass import CHECKS
+        assert CHECKS["WAF-001"]["owasp"] == "OWASP WSTG-CONF-06"
+        assert "MITRE T1036" in CHECKS["WAF-002"]["owasp"]
+        assert CHECKS["WAF-011"]["owasp"].startswith("NIST NVD")
+        # ninguno conserva el tag genérico antiguo OWASP-A0x
+        assert not any(c["owasp"].startswith("OWASP-A0") for c in CHECKS.values())
+    def test_version(self):
+        from vamp_waf_bypass import __version__
+        assert __version__ == "1.2.0"
