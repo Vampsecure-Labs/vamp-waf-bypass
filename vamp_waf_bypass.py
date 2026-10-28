@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 # ─── Check catalog ────────────────────────────────────────────────────────────
 
